@@ -17,7 +17,7 @@
 		return $array;
 	}
 	
-	function get_image($url) {
+	function _file_get_contents($url) {
 		$content = @file_get_contents(
 					$url,
 					false,
@@ -28,27 +28,36 @@
 						],
 					]));
 		
+		if (isset($http_response_header))
+			return array($content, $http_response_header);
+		else
+			return array($content, null);
+	}
+	
+	function get_image($url) {
+		list($content, $http_response_header) = _file_get_contents($url);
+		
 		$header = array();
 		
 		if ($content === false) {
 			$url = 'img/nt_img_url.png';
-			
-			$content = @file_get_contents(
-						$url,
-						false,
-						stream_context_create([
-							'http' => [
-								'ignore_errors' => true,
-								'header' => 'referer: ' . $url
-							],
-						]));
+
+			$content = _file_get_contents($url)[0];
 			
 			$header[0] = 'content-type: image/png';
 		} else {
 			$pattern = "/^content-type:.*image.*$/i";
 			$header = array_values(preg_grep($pattern, $http_response_header));
-		}
 			
+			if (!count($header)) {
+				$url = 'img/nt_img_url.png';
+				
+				$content = _file_get_contents($url)[0];
+				
+				$header[0] = 'content-type: image/png';
+			}
+		} 
+		
 		return array($content, $header);
 	}
 	
