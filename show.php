@@ -17,63 +17,49 @@
 		return $array;
 	}
 	
-	function _file_get_contents($url) {
-		$content = @file_get_contents(
-					$url,
-					false,
-					stream_context_create([
-						'http' => [
-							'ignore_errors' => true,
-							'header' => 'referer: ' . $url
-						],
-					]));
-		
-		if (isset($http_response_header))
-			return array($content, $http_response_header);
-		else
-			return array($content, null);
-	}
-	
-	function get_image($url) {
-		list($content, $http_response_header) = _file_get_contents($url);
-		
-		$header = array();
-		
-		if ($content === false) {
-			$url = 'img/nt_img_url.png';
+	function get_curl($url) {
+		$ch = curl_init();
 
-			$content = _file_get_contents($url)[0];
-			
-			$header[0] = 'content-type: image/png';
-		} else {
-			$pattern = "/^content-type:.*image.*$/i";
-			$header = array_values(preg_grep($pattern, $http_response_header));
-			
-			if (!count($header)) {
-				$url = 'img/nt_img_url.png';
-				
-				$content = _file_get_contents($url)[0];
-				
-				$header[0] = 'content-type: image/png';
-			}
-		} 
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_REFERER, $url); 
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);  
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		
-		return array($content, $header);
+		$content = curl_exec($ch);
+		$contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+		
+		curl_close($ch);
+
+		return array(
+			'content' => $content, 
+			'contentType' => $contentType
+		);
 	}
 	
-	function show_image($content, $header) {
-		if (count($header)) {
-			header($header[0]);
-			echo $content;
+	function show_image($array) {
+		if (!is_image_type($array['contentType'])){
+			return false;
 		}
+		
+		header('Content-Type:' . $array['contentType']);
+		echo $array['content'];
+	}
+	
+	function is_image_type($contentType) {
+		return strpos(strtolower($contentType), 'image') !== false;
 	}
 	
 	if (isset(get_url_params()['img'])) {
 		$img_array = get_url_params()['img'];
-		$url = $img_array[rand(0, count($img_array) - 1)];
-
-		list($content, $header) = get_image($url);
+		$url = $img_array[random_int(0, count($img_array) - 1)];
 		
-		show_image($content, $header);
+		if (!show_image(get_curl($url))){
+			$nt_img_url = 'http://' . $_SERVER['HTTP_HOST'] . '/img/nt_img_url.png';
+			
+			show_image(get_curl($nt_img_url));
+		}
 	}
 ?>
