@@ -64,20 +64,23 @@
 		
 		public function Index(){
 			if (isset(get_url_params()['img']))
-				render('../View/index.php', ['img_url_items' => get_url_params()['img']]);
+				render('./View/index.php', ['img_url_items' => get_url_params()['img']]);
 			else
-				render('../View/index.php');
+				render('./View/index.php');
 		}
 		
 		public function Show(){
+			$nt_img_url = 'http://' . $_SERVER['HTTP_HOST'] . '/Asset/img/nt_img_url.png';
+			
 			if (isset(get_url_params()['img'])) {
 				$img_array = get_url_params()['img'];
 				$url = $img_array[random_int(0, count($img_array) - 1)];
 				
 				if (!show_image(get_curl($url))){
-					$nt_img_url = 'http://' . $_SERVER['HTTP_HOST'] . '/img/nt_img_url.png';
 					show_image(get_curl($nt_img_url));
 				}
+			} else {
+				show_image(get_curl($nt_img_url));
 			}
 		}
 	}

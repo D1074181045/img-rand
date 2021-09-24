@@ -1,10 +1,10 @@
-<?php include("../Controller/controller.php"); ?>
+<?php include("./Controller/controller.php"); ?>
 <?php
-	$route=[
-		'' => 'Controller@Index',
-		'show' => 'Controller@Show',
+	$routes = [
+		'' => ['Controller', 'Index'],
+		'show' => ['Controller', 'Show'],
 	];
-	
+
 	if(isset($_SERVER['REDIRECT_URL'])){
         $path = ltrim($_SERVER['REDIRECT_URL'], '/');
         $path_arr = explode('/', $path);
@@ -21,15 +21,19 @@
 	    $parameters = array_values($path_arr);
 	}
 	
-	if(isset($route[$key])){
-        $arr = explode('@', $route[$key]);
-        $controller = new $arr[0];
-        $action = $arr[1];
-        if(isset($parameters)){
-            $controller->$action($parameters);
-        } else {
-            $controller->$action();
-        }
+	if(isset($routes[$key])){
+		$route = $routes[$key];
+		if($route instanceof Closure){
+			$route();
+		} else {
+			$controller = new $route[0];
+			$action = $route[1];
+			if(isset($parameters)){
+				$controller->$action($parameters);
+			} else {
+				$controller->$action();
+			}
+		}
 	} else {
 	    echo '404';
 	}

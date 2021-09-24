@@ -1,1 +1,1 @@
-<?php header('Location: public/index.php'); ?>
+<?php include("./Router/web.php"); ?>
