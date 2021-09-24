@@ -1,5 +1,10 @@
 <?php include("http2https.php"); ?>
 <?php
+	function render($path, array $args = []){
+		extract($args);
+		require($path);
+	}
+
 	function get_url_params() {
 		$query = $_SERVER['QUERY_STRING'];
 		
@@ -16,7 +21,7 @@
 		}
 		return $array;
 	}
-	
+
 	function get_curl($url) {
 		$ch = curl_init();
 
@@ -38,7 +43,7 @@
 			'contentType' => $contentType
 		);
 	}
-	
+
 	function show_image($array) {
 		if (!is_image_type($array['contentType'])){
 			return false;
@@ -51,15 +56,29 @@
 	function is_image_type($contentType) {
 		return strpos(strtolower($contentType), 'image') !== false;
 	}
-	
-	if (isset(get_url_params()['img'])) {
-		$img_array = get_url_params()['img'];
-		$url = $img_array[random_int(0, count($img_array) - 1)];
+
+	class Controller {
+		public function __call($method,$args){
+			echo 'has not this function'.$method;
+		}
 		
-		if (!show_image(get_curl($url))){
-			$nt_img_url = 'http://' . $_SERVER['HTTP_HOST'] . '/img/nt_img_url.png';
-			
-			show_image(get_curl($nt_img_url));
+		public function Index(){
+			if (isset(get_url_params()['img']))
+				render('../View/index.php', ['img_url_items' => get_url_params()['img']]);
+			else
+				render('../View/index.php');
+		}
+		
+		public function Show(){
+			if (isset(get_url_params()['img'])) {
+				$img_array = get_url_params()['img'];
+				$url = $img_array[random_int(0, count($img_array) - 1)];
+				
+				if (!show_image(get_curl($url))){
+					$nt_img_url = 'http://' . $_SERVER['HTTP_HOST'] . '/img/nt_img_url.png';
+					show_image(get_curl($nt_img_url));
+				}
+			}
 		}
 	}
 ?>

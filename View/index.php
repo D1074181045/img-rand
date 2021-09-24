@@ -1,22 +1,3 @@
-<?php include("http2https.php"); ?>
-<?php
-	function get_url_params() {
-		$query = $_SERVER['QUERY_STRING'];
-					
-		if (!$query) return;
-						
-		$params = explode('&', $query);
-		$array = array();
-		
-		foreach ($params as $param) {
-			if (!strpos($param, '=')) $param .= '=';
-						
-			list($key, $value) = explode('=', $param, 2);
-			$array[$key][] = $value;
-		}
-		return $array;
-	}
-?>
 <html>
 <?php include("layout/head.php"); ?>
 <body>
@@ -26,11 +7,11 @@
 			<h3 style="text-align:center">添加網址</h3>
 			<div style="overflow-y: scroll;max-height: 215px;" id="url_list">
 				<?php 
-					if (isset(get_url_params()['img'])) {
-						for ($i = 0; $i < count(get_url_params()['img']); $i++) {
+					if (isset($img_url_items)) {
+						for ($i = 0; $i < count($img_url_items); $i++) {
 				?>
 				<div style="display: flex;margin-bottom: 5px;">
-				<input class="form-control" autocomplete="off" name="img_url" type="text" value="<?php echo get_url_params()['img'][$i] ?>"/>
+				<input class="form-control" autocomplete="off" name="img_url" type="text" value="<?php echo $img_url_items[$i] ?>"/>
 				<button class="btn btn-primary" style="margin-left:5px">-</button>
 				</div>
 				<?php	

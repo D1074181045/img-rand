@@ -38,7 +38,7 @@ document.getElementById("generate")
 	let query = img_url_array.map(({value}) => {
 		return 'img=' + value;
 	}).join('&');
-	query = 'show.php?' + query;
+	query = 'show?' + query;
 	
 	generate_url = new URL(query, location.origin).href;
 	
