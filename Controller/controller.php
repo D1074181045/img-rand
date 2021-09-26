@@ -14,11 +14,12 @@
 		$array = array();
 		
 		foreach ($params as $param) {
-			if (strpos($param, '=') === false) $param += '=';
+			if (strpos($param, '=') === false) $param .= '=';
 			
 			list($key, $value) = explode('=', $param, 2);
 			$array[$key][] = $value;
 		}
+		
 		return $array;
 	}
 
