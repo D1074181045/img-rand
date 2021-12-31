@@ -1,5 +1,6 @@
-<?php include("./Controller/controller.php"); ?>
 <?php 
+	use App\Controllers\Controller;
+	
 	function url($regex, $method) {
         $path = isset($_SERVER['REDIRECT_URL'])
 				? ltrim($_SERVER['REDIRECT_URL'], '/') : '';
@@ -21,10 +22,9 @@
 	}
 	
 	$routes = [
-		url('^$', ['Controller', 'Index']),
-		url('^show$', ['Controller', 'Show']),
+		url('^$', [Controller::class, 'Index']),
+		url('^show$', [Controller::class, 'Show']),
 		url('(.+)', function () {
 			header("Location: /");
 		}),
 	];
-?>
