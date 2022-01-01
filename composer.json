@@ -3,7 +3,8 @@
 	"require": {
         "php": "^7.4|^8.0",
         "ext-bcmath": "*",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-curl": "*"
     },
 	"config": {
         "optimize-autoloader": true,

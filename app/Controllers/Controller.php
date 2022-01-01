@@ -14,16 +14,16 @@
 		
 		public function render($path, array $args = []){
 			extract($args);
-			require(__DIR__ . "/../../views/$path.php");
+			require($GLOBALS['baseDir'] . "/views/$path.php");
 		}
 
 		public function get_url_params() {
 			$query = $_SERVER['QUERY_STRING'];
-			
-			if (!$query) return;
-				
+            $array = array();
+
+			if (!$query) return $array;
+
 			$params = explode('&', $query);
-			$array = array();
 			
 			foreach ($params as $param) {
 				if (strpos($param, '=') === false) $param .= '=';
@@ -64,25 +64,27 @@
 			
 			header('Content-Type:' . $array['contentType']);
 			echo $array['content'];
+
+            return true;
 		}
 		
 		public function is_image_type($contentType) {
 			return strpos(strtolower($contentType), 'image') !== false;
 		}
 		
-		public function Index(){
+		public function index(){
 			if (isset($this->get_url_params()['img']))
 				$this->render('index', ['img_url_items' => $this->get_url_params()['img']]);
 			else
 				$this->render('index');
 		}
 		
-		public function Show(){
+		public function show(){
 			$nt_img_url = 'http://' . $_SERVER['HTTP_HOST'] . '/asset/img/nt_img_url.png';
 			
 			if (isset($this->get_url_params()['img'])) {
 				$img_array = $this->get_url_params()['img'];
-				$url = $img_array[random_int(0, count($img_array) - 1)];
+				$url = $img_array[mt_rand(0, count($img_array) - 1)];
 				
 				if (!$this->show_image($this->get_curl($url))){
 					$this->show_image($this->get_curl($nt_img_url));

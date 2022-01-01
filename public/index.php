@@ -1,3 +1,5 @@
-<?php 
-	require __DIR__ . '/../vendor/autoload.php';
-	require __DIR__ . '/../routes/web.php';
+<?php
+	$baseDir = dirname(dirname(__FILE__));
+
+	require $baseDir . '/vendor/autoload.php';
+	require $baseDir . '/routes/web.php';

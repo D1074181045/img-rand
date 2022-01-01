@@ -20,11 +20,9 @@
 			exit;
 		}
 	}
-	
-	$routes = [
-		url('^$', [Controller::class, 'Index']),
-		url('^show$', [Controller::class, 'Show']),
-		url('(.+)', function () {
-			header("Location: /");
-		}),
-	];
+
+	url('^$', [Controller::class, 'index']);
+	url('^show$', [Controller::class, 'show']);
+	url('(.+)', function () {
+	    header("Location: /");
+	});
